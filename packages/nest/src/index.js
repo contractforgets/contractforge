@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NestAdapterGenerator = void 0;
-const core_1 = require("@contractforge/core");
+const core_1 = require("@sdkforge/core");
 const path_1 = __importDefault(require("path"));
 const change_case_1 = require("change-case");
 class NestAdapterGenerator extends core_1.BaseGenerator {

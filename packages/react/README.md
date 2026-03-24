@@ -1,17 +1,17 @@
-# @contractforge/react
+# @sdkforge/react
 
-The official native React-Query adapter plugin for **ContractForge**. 
+The official native React-Query adapter plugin for **SDKForge**. 
 
-Automatically maps compiled ContractForge Clean Architecture services into robust `useQuery` and `useMutation` hooks.
+Automatically maps compiled SDKForge Clean Architecture services into robust `useQuery` and `useMutation` hooks.
 
 ## Installation
 ```bash
-npm install -D @contractforge/cli @contractforge/react
+npm install -D @sdkforge/cli @sdkforge/react
 ```
 
 ## Usage
 Simply pass this plugin locally utilizing the compiler:
 
 ```bash
-npx @contractforge/cli generate -i api.json -o src/api --plugin react
+npx @sdkforge/cli generate -i api.json -o src/api --plugin react
 ```

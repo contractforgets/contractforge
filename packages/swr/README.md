@@ -1,15 +1,15 @@
-# @contractforge/swr
+# @sdkforge/swr
 
-The official native Vercal SWR adapter plugin for **ContractForge**. 
+The official native Vercal SWR adapter plugin for **SDKForge**. 
 
-Automatically maps compiled ContractForge Clean Architecture services into perfectly typed `useSWR` hooks handling data mutation natively.
+Automatically maps compiled SDKForge Clean Architecture services into perfectly typed `useSWR` hooks handling data mutation natively.
 
 ## Installation
 ```bash
-npm install -D @contractforge/cli @contractforge/swr
+npm install -D @sdkforge/cli @sdkforge/swr
 ```
 
 ## Usage
 ```bash
-npx @contractforge/cli generate -i api.json -o src/api --plugin swr
+npx @sdkforge/cli generate -i api.json -o src/api --plugin swr
 ```

@@ -1,15 +1,15 @@
-# @contractforge/angular
+# @sdkforge/angular
 
-The official native Angular HttpClient adapter plugin for **ContractForge**. 
+The official native Angular HttpClient adapter plugin for **SDKForge**. 
 
 Automatically maps compiled Clean Architecture services into strongly-typed injectable Angular RxJS Services precisely targeting module scopes.
 
 ## Installation
 ```bash
-npm install -D @contractforge/cli @contractforge/angular
+npm install -D @sdkforge/cli @sdkforge/angular
 ```
 
 ## Usage
 ```bash
-npx @contractforge/cli generate -i api.json -o src/api --plugin angular
+npx @sdkforge/cli generate -i api.json -o src/api --plugin angular
 ```

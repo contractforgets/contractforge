@@ -1,4 +1,4 @@
-import { BaseGenerator } from "@contractforge/core";
+import { BaseGenerator } from "@sdkforge/core";
 import path from "path";
 import { kebabCase } from "change-case";
 

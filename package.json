@@ -1,15 +1,24 @@
 {
-  "name": "contractforge",
+  "name": "sdkforge",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/contractforgets/contractforge.git"
+    "url": "git+https://github.com/sdkforge/sdkforge.git"
   },
   "bugs": {
-    "url": "https://github.com/contractforgets/contractforge/issues"
+    "url": "https://github.com/sdkforge/sdkforge/issues"
   },
-  "homepage": "https://github.com/contractforgets/contractforge#readme",
-  "keywords": ["openapi", "swagger", "postman", "code-generator", "typescript", "clean-architecture", "monorepo", "sdk-builder"],
+  "homepage": "https://github.com/sdkforge/sdkforge#readme",
+  "keywords": [
+    "openapi",
+    "swagger",
+    "postman",
+    "code-generator",
+    "typescript",
+    "clean-architecture",
+    "monorepo",
+    "sdk-builder"
+  ],
   "workspaces": [
     "packages/*"
   ],
@@ -19,5 +28,6 @@
   },
   "devDependencies": {
     "typescript": "^5.0.0"
-  }
+  },
+  "version": "0.1.0"
 }

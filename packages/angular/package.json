@@ -1,6 +1,6 @@
 {
-  "name": "@contractforge/angular",
-  "version": "0.1.4",
+  "name": "@sdkforge/angular",
+  "version": "0.1.0",
   "keywords": [
     "openapi",
     "swagger",
@@ -11,13 +11,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/contractforgets/contractforge.git",
+    "url": "git+https://github.com/sdkforge/sdkforge.git",
     "directory": "packages/angular"
   },
   "bugs": {
-    "url": "https://github.com/contractforgets/contractforge/issues"
+    "url": "https://github.com/sdkforge/sdkforge/issues"
   },
-  "homepage": "https://github.com/contractforgets/contractforge/tree/main/packages/angular#readme",
+  "homepage": "https://github.com/sdkforge/sdkforge/tree/main/packages/angular#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "change-case": "^5.4.4",
-    "@contractforge/core": "*"
+    "@sdkforge/core": "*"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

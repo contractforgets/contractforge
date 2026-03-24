@@ -3,10 +3,10 @@ import { program } from "commander";
 import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
-import { GeneratorEngine, EngineConfig } from "@contractforge/core";
+import { GeneratorEngine, EngineConfig } from "@sdkforge/core";
 
 program
-  .name("contractforge")
+  .name("sdkforge")
   .description("Enterprise SDK Compiler processing OpenAPI/Postman contracts into strictly typed Clean Architecture bindings.")
   .version("0.2.0");
 
@@ -14,7 +14,7 @@ program
   .command("init")
   .description("Initialize configuration file")
   .action(async () => {
-    const configPath = path.join(process.cwd(), "contractforge.config.json");
+    const configPath = path.join(process.cwd(), "sdkforge.config.json");
     const defaultConfig = {
       input: "openapi.yaml",
       output: "src/api",
@@ -28,14 +28,14 @@ program
       wrapResponse: false
     };
     await fs.writeFile(configPath, JSON.stringify(defaultConfig, null, 2));
-    console.log("Created contractforge.config.json!");
+    console.log("Created sdkforge.config.json!");
   });
 
 program
   .command("clean")
   .description("Removes generated files")
   .action(async () => {
-     const configPath = path.resolve(process.cwd(), "contractforge.config.json");
+     const configPath = path.resolve(process.cwd(), "sdkforge.config.json");
      let outDir = "src/api";
      if (fs.existsSync(configPath)) {
         const conf = JSON.parse(await fs.readFile(configPath, "utf-8"));
@@ -68,7 +68,7 @@ program
       naming: { dtoSuffix: "", serviceSuffix: "Service", repositorySuffix: "Repository" }
     };
 
-    const configPath = path.resolve(process.cwd(), "contractforge.config.json");
+    const configPath = path.resolve(process.cwd(), "sdkforge.config.json");
     if (fs.existsSync(configPath)) {
       const fileConfig = JSON.parse(await fs.readFile(configPath, "utf-8"));
       config = { ...config, ...fileConfig };
@@ -92,7 +92,7 @@ program
     if (config.adapters) {
       for (const adapter of config.adapters) {
         try {
-          const pkgName = adapter.startsWith("@") ? adapter : `@contractforge/${adapter}`;
+          const pkgName = adapter.startsWith("@") ? adapter : `@sdkforge/${adapter}`;
           const PluginModule = require(pkgName);
           for (const key of Object.keys(PluginModule)) {
              if (PluginModule[key] && PluginModule[key].prototype && PluginModule[key].prototype.generate) {
