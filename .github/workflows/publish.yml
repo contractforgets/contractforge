@@ -1,0 +1,39 @@
+name: Publish to NPM
+
+on:
+  push:
+    branches:
+      - main
+    # Only trigger when package versions actually change to avoid build spam!
+    paths:
+      - 'packages/**/package.json'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Monorepo Dependencies
+        run: npm ci
+
+      - name: Build All Workspaces
+        run: npm run build
+
+      - name: Publish to NPM Registry
+        run: npm publish --workspaces --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          generate_release_notes: true

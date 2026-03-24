@@ -11,6 +11,13 @@
     "monorepo",
     "sdk-builder"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contractforgets/contractforge.git",
+    "directory": "packages/cli"
+  },
+  "bugs": { "url": "https://github.com/contractforgets/contractforge/issues" },
+  "homepage": "https://github.com/contractforgets/contractforge/tree/main/packages/cli#readme",
   "bin": {
     "contractforge": "./dist/index.js"
   },

@@ -1,6 +1,14 @@
 {
   "name": "contractforge",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contractforgets/contractforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/contractforgets/contractforge/issues"
+  },
+  "homepage": "https://github.com/contractforgets/contractforge#readme",
   "keywords": ["openapi", "swagger", "postman", "code-generator", "typescript", "clean-architecture", "monorepo", "sdk-builder"],
   "workspaces": [
     "packages/*"
