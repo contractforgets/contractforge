@@ -22,7 +22,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Monorepo Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build All Workspaces
         run: npm run build
