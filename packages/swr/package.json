@@ -1,6 +1,6 @@
 {
   "name": "@contractforge/swr",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": [
     "openapi",
     "swagger",
@@ -15,7 +15,9 @@
     "url": "git+https://github.com/contractforgets/contractforge.git",
     "directory": "packages/swr"
   },
-  "bugs": { "url": "https://github.com/contractforgets/contractforge/issues" },
+  "bugs": {
+    "url": "https://github.com/contractforgets/contractforge/issues"
+  },
   "homepage": "https://github.com/contractforgets/contractforge/tree/main/packages/swr#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
