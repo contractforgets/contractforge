@@ -1,12 +1,25 @@
 {
   "name": "@contractforge/swr",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "keywords": [
+    "openapi",
+    "swagger",
+    "react",
+    "hooks",
+    "swr",
+    "clean-architecture",
+    "sdk-builder"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "scripts": { "build": "tsc" },
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "change-case": "^5.4.4",
     "@contractforge/core": "*"
   },
-  "devDependencies": { "typescript": "^5.0.0" }
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
 }

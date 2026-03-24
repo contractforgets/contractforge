@@ -1,24 +1,20 @@
-# Node modules
+# Dependencies
 node_modules/
-example/node_modules/
+package-lock.json
 
-# Build artifacts
+# Builds
 dist/
-example/dist/
+*.tsbuildinfo
 
-# Generated output from the CLI testing
-example/src/api/
-contract-arch.config.json
+# Editor
+.vscode/
+.idea/
+*.swp
 
-# Environment files
-.env
-.env.*
-
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+
+# Example App Outputs (Keep the API Generator clean)
+example/src/api
+example/node_modules
+example/dist

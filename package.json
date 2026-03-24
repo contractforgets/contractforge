@@ -1,6 +1,7 @@
 {
   "name": "contractforge",
   "private": true,
+  "keywords": ["openapi", "swagger", "postman", "code-generator", "typescript", "clean-architecture", "monorepo", "sdk-builder"],
   "workspaces": [
     "packages/*"
   ],
