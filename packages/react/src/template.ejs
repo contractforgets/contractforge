@@ -1,0 +1,54 @@
+import { useState, useCallback } from 'react';
+import { <%= entity.name %>Service } from '../../core/services/<%= kebabCase(entity.name) %>.service';
+import { DomainError, Result } from '../../core/types/result';
+<% 
+  const domains = new Set();
+  const dtosForInput = new Set();
+  entity.endpoints.forEach(ep => {
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(`${ep.requestFields[0].ref}DTO`);
+    if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) {
+      domains.add(ep.responseFields[0].ref);
+    }
+  });
+
+  Array.from(domains).forEach(domain => {
+-%>
+import { <%= domain %> } from '../../core/domain/<%= kebabCase(domain) %>';
+<% }); -%>
+<% Array.from(dtosForInput).forEach(dto => { -%>
+import { <%= dto %> } from "../../core/dto/<%= snakeCase(dto.replace('DTO','')) %>.dto";
+<% }); -%>
+
+<% entity.endpoints.forEach(ep => { 
+     const req = ep.requestFields ? ep.requestFields[0] : null;
+     const res = ep.responseFields ? ep.responseFields[0] : null;
+     
+     const reqType = req ? (req.ref ? `${req.ref}DTO${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const domainName = res ? (res.ref ? res.ref : 'any') : 'void';
+     const resType = domainName !== 'void' ? `${domainName}${res.isArray ? '[]' : ''}` : 'void';
+     
+     const isGet = ep.method === 'GET' || ep.method === 'DELETE';
+     const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');
+     const executeArgs = isGet ? '' : (reqType !== 'any' ? `data` : '');
+-%>
+export function use<%= pascalCase(ep.name) %>() {
+  const [data, setData] = useState<<%- resType %> | undefined>();
+  const [error, setError] = useState<DomainError | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const execute = useCallback(async (<%- params %>): Promise<Result<<%- resType %>>> => {
+    setIsLoading(true);
+    setError(undefined);
+    const result = await <%= entity.name %>Service.<%= camelCase(ep.name) %>(<%- executeArgs %>);
+    if (result.success) {
+      setData(result.data);
+    } else {
+      setError(result.error);
+    }
+    setIsLoading(false);
+    return result;
+  }, []);
+
+  return { data, error, isLoading, execute };
+}
+<% }); -%>

@@ -1,0 +1,14 @@
+export interface <%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %> {
+<% entity.fields.forEach(field => { -%>
+<% 
+  let fieldType = field.type;
+  if (field.ref) {
+    fieldType = `${field.ref}${config.naming.dtoSuffix}`;
+  }
+  if (field.isArray) {
+    fieldType = `${fieldType}[]`;
+  }
+-%>
+  <%= snakeCase(field.name) %><%- field.isRequired ? "" : "?" %>: <%- fieldType %>;
+<% }); -%>
+}

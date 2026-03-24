@@ -1,0 +1,12 @@
+{
+  "name": "@contractforge/angular",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": { "build": "tsc" },
+  "dependencies": {
+    "change-case": "^5.4.4",
+    "@contractforge/core": "*"
+  },
+  "devDependencies": { "typescript": "^5.0.0" }
+}

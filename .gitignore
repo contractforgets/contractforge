@@ -1,0 +1,24 @@
+# Node modules
+node_modules/
+example/node_modules/
+
+# Build artifacts
+dist/
+example/dist/
+
+# Generated output from the CLI testing
+example/src/api/
+contract-arch.config.json
+
+# Environment files
+.env
+.env.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

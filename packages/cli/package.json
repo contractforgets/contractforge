@@ -1,0 +1,20 @@
+{
+  "name": "@contractforge/cli",
+  "version": "0.1.0",
+  "bin": {
+    "contractforge": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "commander": "^13.1.0",
+    "chokidar": "^4.0.3",
+    "fs-extra": "^11.2.0",
+    "@contractforge/core": "*"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "typescript": "^5.0.0"
+  }
+}

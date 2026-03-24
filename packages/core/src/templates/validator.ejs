@@ -1,0 +1,46 @@
+import { z } from "zod";
+<% 
+  const imports = new Set();
+  entity.fields.forEach(f => {
+    if (f.ref && f.ref !== entity.name && !f.isEnum) {
+      imports.add(`import { ${pascalCase(f.ref)}Validator } from "./${kebabCase(f.ref)}.validator";`);
+    }
+  });
+-%>
+<% Array.from(imports).forEach(imp => { -%>
+<%- imp %>
+<% }); -%>
+
+<%
+  function getZodType(f) {
+    let zType = "z.string()";
+    
+    if (f.ref && !f.isEnum) {
+      zType = `${pascalCase(f.ref)}Validator`;
+    } else if (f.isDate) {
+      zType = "z.string().datetime()";
+    } else if (f.type === 'integer' || f.type === 'number') {
+      zType = "z.number()";
+    } else if (f.type === 'boolean') {
+      zType = "z.boolean()";
+    } else if (f.type === 'array') {
+      zType = "z.array(z.any())";
+    }
+    
+    if (f.isArray && !f.ref) {
+      zType = `z.array(${zType})`;
+    } else if (f.isArray && f.ref) {
+      zType = `z.array(${zType})`;
+    }
+    
+    if (!f.required) {
+      zType += ".optional()";
+    }
+    return zType;
+  }
+-%>
+export const <%= pascalCase(entity.name) %>Validator = z.object({
+<% entity.fields.forEach(f => { -%>
+  <%= f.name %>: <%- getZodType(f) %>,
+<% }); -%>
+});

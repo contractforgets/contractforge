@@ -1,0 +1,22 @@
+# Exclude all source files to keep the package lightweight
+src/**/*.ts
+
+# Explictly INCLUDE the templates path! The CLI reads directly from this folder at runtime
+!src/templates/
+!src/templates/**
+
+# Exclude local test configuration files
+example/
+test-openapi.json
+contract-arch.config.json
+tsconfig.json
+tsconfig.app.json
+
+# Ignore generic repo structures
+.git/
+.gitignore
+
+# Tests and Coverage (if implemented later)
+__tests__/
+coverage/
+jest.config.js

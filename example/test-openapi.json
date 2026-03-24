@@ -1,0 +1,58 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Test API", "version": "1.0.0" },
+  "components": {
+    "schemas": {
+      "UserStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"]
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "role_name": { "type": "string" }
+        },
+        "required": ["id", "role_name"]
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "full_name": { "type": "string" },
+          "avatar_url": { "type": "string" }
+        },
+        "required": ["full_name"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "status": { "$ref": "#/components/schemas/UserStatus" },
+          "profile": { "$ref": "#/components/schemas/Profile" },
+          "roles": { "type": "array", "items": { "$ref": "#/components/schemas/Role" } }
+        },
+        "required": ["id", "created_at", "status", "profile", "roles"]
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "operationId": "getUsers",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "declaration": true,
+    "sourceMap": true
+  },
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/cli" },
+    { "path": "./packages/react" },
+    { "path": "./packages/swr" },
+    { "path": "./packages/angular" },
+    { "path": "./packages/vue" },
+    { "path": "./packages/nest" }
+  ]
+}

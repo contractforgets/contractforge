@@ -1,0 +1,16 @@
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: process.env.VITE_API_URL || process.env.API_URL || '',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // The Service layer will catch these and map them to Domain errors
+    throw error;
+  }
+);

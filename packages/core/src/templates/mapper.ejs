@@ -1,0 +1,17 @@
+import { <%= entity.name %><%= config.naming.dtoSuffix %> } from "../dto/<%= snakeCase(entity.name) %>.dto";
+import { <%= entity.name %> } from "../domain/<%= kebabCase(entity.name) %>";
+
+export function map<%= entity.name %><%= config.naming.dtoSuffix %>ToDomain(dto: <%= entity.name %><%= config.naming.dtoSuffix %>): <%= entity.name %> {
+  return {
+    ...dto,
+<% entity.fields.forEach(field => { -%>
+<% if (field.type === 'Date') { -%>
+    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? new Date(dto.<%= snakeCase(field.name) %>) : undefined as any,
+<% } else if (field.ref) { -%>
+    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? map<%= field.ref %><%= config.naming.dtoSuffix %>ToDomain(dto.<%= snakeCase(field.name) %>) : undefined as any,
+<% } else { -%>
+    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %>,
+<% } -%>
+<% }); -%>
+  };
+}

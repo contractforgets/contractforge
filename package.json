@@ -1,0 +1,14 @@
+{
+  "name": "contractforge",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

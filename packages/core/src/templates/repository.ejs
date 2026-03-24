@@ -1,0 +1,43 @@
+import { apiClient } from "../client/api-client";
+<% 
+  const dtos = new Set();
+  entity.endpoints.forEach(ep => {
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtos.add(ep.requestFields[0].ref);
+    if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) dtos.add(ep.responseFields[0].ref);
+  });
+  Array.from(dtos).forEach(dto => {
+-%>
+import { <%= dto %><%= config.naming.dtoSuffix %> } from "../dto/<%= snakeCase(dto) %>.dto";
+<% }); -%>
+<% if (config.wrapResponse) { -%>
+import { ApiResponse } from "../types/result";
+<% } -%>
+
+export class <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %> {
+<% entity.endpoints.forEach(ep => { 
+     const req = ep.requestFields ? ep.requestFields[0] : null;
+     const res = ep.responseFields ? ep.responseFields[0] : null;
+     
+     const reqType = req ? (req.ref ? `${req.ref}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const domainName = res ? (res.ref ? res.ref : 'any') : 'void';
+     const resType = domainName !== 'void' ? `${domainName}${config.naming.dtoSuffix}${res.isArray ? '[]' : ''}` : 'void';
+     
+     const isGet = ep.method === 'GET' || ep.method === 'DELETE';
+     const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');
+     const fetchArgs = isGet ? `"${ep.path}"` : `"${ep.path}", data`;
+-%>
+  static async <%= camelCase(ep.name) %>(<%- params %>): Promise<<%- resType %>> {
+<% if (resType !== 'void') { -%>
+<% if (config.wrapResponse) { -%>
+    const response = await apiClient.<%= ep.method.toLowerCase() %><ApiResponse<<%- resType %>>>(<%- fetchArgs %>);
+    return response.data.data;
+<% } else { -%>
+    const response = await apiClient.<%= ep.method.toLowerCase() %><<%- resType %>>(<%- fetchArgs %>);
+    return response.data;
+<% } -%>
+<% } else { -%>
+    await apiClient.<%= ep.method.toLowerCase() %>(<%- fetchArgs %>);
+<% } -%>
+  }
+<% }); -%>
+}

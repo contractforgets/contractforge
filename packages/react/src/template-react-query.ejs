@@ -1,0 +1,33 @@
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> } from '../../core/services/<%= kebabCase(entity.name) %>.service';
+<% 
+  const dtosForInput = new Set();
+  entity.endpoints.forEach(ep => {
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(`${ep.requestFields[0].ref}${config.naming.dtoSuffix}`);
+  });
+
+  Array.from(dtosForInput).forEach(dto => {
+-%>
+import { <%= dto %> } from "../../core/dto/<%= snakeCase(dto.replace(config.naming.dtoSuffix, '')) %>.dto";
+<% }); -%>
+
+<% entity.endpoints.forEach(ep => { 
+     const req = ep.requestFields ? ep.requestFields[0] : null;
+     const reqType = req ? (req.ref ? `${req.ref}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const isGet = ep.method === 'GET' || ep.method === 'DELETE';
+-%>
+<% if (isGet) { -%>
+export function use<%= pascalCase(ep.name) %>Query() {
+  return useQuery({
+    queryKey: ['<%= camelCase(ep.name) %>'],
+    queryFn: () => <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %>.<%= camelCase(ep.name) %>()
+  });
+}
+<% } else { -%>
+export function use<%= pascalCase(ep.name) %>Mutation() {
+  return useMutation({
+    mutationFn: (data<%- reqType !== 'any' ? `: ${reqType}` : '?: any' %>) => <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %>.<%= camelCase(ep.name) %>(data)
+  });
+}
+<% } -%>
+<% }); -%>

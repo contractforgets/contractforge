@@ -1,0 +1,64 @@
+import { Result } from "../types/result";
+import { mapApiErrorToDomain } from "../errors/error.mapper";
+import { <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %> } from "../repository/<%= kebabCase(entity.name) %>.repository";
+import { z } from "zod";
+<% 
+  const domains = new Set();
+  const mappers = new Set();
+  const dtosForInput = new Set();
+  const validators = new Set();
+  
+  entity.endpoints.forEach(ep => {
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(ep.requestFields[0].ref);
+    if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) {
+      domains.add(ep.responseFields[0].ref);
+      mappers.add(ep.responseFields[0].ref);
+      validators.add(ep.responseFields[0].ref);
+    }
+  });
+
+  Array.from(domains).forEach(domain => {
+-%>
+import { <%= domain %> } from "../domain/<%= kebabCase(domain) %>";
+<% }); -%>
+<% Array.from(mappers).forEach(mapper => { -%>
+import { map<%= mapper %><%= config.naming.dtoSuffix %>ToDomain } from "../mappers/<%= kebabCase(mapper) %>.mapper";
+<% }); -%>
+<% Array.from(validators).forEach(validator => { -%>
+import { <%= validator %>Validator } from "../validators/<%= kebabCase(validator) %>.validator";
+<% }); -%>
+<% Array.from(dtosForInput).forEach(dto => { -%>
+import { <%= dto %><%= config.naming.dtoSuffix %> } from "../dto/<%= snakeCase(dto) %>.dto";
+<% }); -%>
+
+export class <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> {
+<% entity.endpoints.forEach(ep => { 
+     const req = ep.requestFields ? ep.requestFields[0] : null;
+     const res = ep.responseFields ? ep.responseFields[0] : null;
+     
+     const reqType = req ? (req.ref ? `${req.ref}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const domainName = res ? (res.ref ? res.ref : 'any') : 'void';
+     const resType = domainName !== 'void' ? `${domainName}${res.isArray ? '[]' : ''}` : 'void';
+     
+     const isGet = ep.method === 'GET' || ep.method === 'DELETE';
+     const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');
+     const repoArgs = isGet ? '' : (reqType !== 'any' ? `data` : '');
+-%>
+  static async <%= camelCase(ep.name) %>(<%- params %>): Promise<Result<<%- resType %>>> {
+    try {
+      const dto = await <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %>.<%= camelCase(ep.name) %>(<%- repoArgs %>);
+<% if (resType !== 'void') { -%>
+<% if (domainName !== 'any') { -%>
+      <%- res.isArray ? `z.array(${domainName}Validator).parse(dto)` : `${domainName}Validator.parse(dto)` %>;
+<% } -%>
+      const domain = <%- res.isArray ? `dto.map(map${domainName}${config.naming.dtoSuffix}ToDomain)` : `map${domainName}${config.naming.dtoSuffix}ToDomain(dto)` %>;
+      return { success: true, data: domain };
+<% } else { -%>
+      return { success: true, data: undefined as any };
+<% } -%>
+    } catch (error: any) {
+      return { success: false, error: mapApiErrorToDomain(error) };
+    }
+  }
+<% }); -%>
+}

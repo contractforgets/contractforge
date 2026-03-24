@@ -1,0 +1,36 @@
+import { DomainError } from "../types/result";
+import { z } from "zod";
+
+export function mapApiErrorToDomain(error: any): DomainError {
+  if (error instanceof z.ZodError) {
+    return {
+      code: "VALIDATION_ERROR",
+      message: "API response validation failed",
+      details: (error as any).errors,
+    };
+  }
+  
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    const status = error.response.status;
+    const data = error.response.data;
+    return {
+      code: data?.code || status.toString(),
+      message: data?.message || error.message || "API Error",
+      details: data?.details || data,
+    };
+  } else if (error.request) {
+    // The request was made but no response was received
+    return {
+      code: "NETWORK_ERROR",
+      message: "No response received from the server",
+    };
+  }
+  
+  // Something happened in setting up the request that triggered an Error
+  return {
+    code: "UNKNOWN_ERROR",
+    message: error.message || "An unexpected error occurred",
+  };
+}

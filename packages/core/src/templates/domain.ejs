@@ -1,0 +1,29 @@
+<%
+  function getTsType(field) {
+    if (field.ref) {
+      const baseType = field.ref;
+      return field.isArray ? `${baseType}[]` : baseType;
+    }
+    if (field.isDate) return 'Date';
+    if (field.type === 'integer' || field.type === 'number') return 'number';
+    if (field.type === 'boolean') return 'boolean';
+    if (field.type === 'array') return 'any[]';
+    return 'string';
+  }
+  
+  const imports = new Set();
+  entity.fields.forEach(f => {
+    if (f.ref && f.ref !== entity.name) {
+      imports.add(`import { ${f.ref} } from "./${kebabCase(f.ref)}";`);
+    }
+  });
+-%>
+<% Array.from(imports).forEach(imp => { -%>
+<%- imp %>
+<% }); -%>
+
+export interface <%= entity.name %> {
+<% entity.fields.forEach(field => { -%>
+  <%= camelCase(field.name) %><%- field.required ? '' : '?' %>: <%- getTsType(field) %>;
+<% }); -%>
+}
