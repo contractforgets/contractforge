@@ -1,0 +1,515 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "E-Commerce API", "version": "1.0.0" },
+  "components": {
+    "schemas": {
+      "OrderStatus": {
+        "type": "string",
+        "enum": ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"]
+      },
+      "PaymentStatus": {
+        "type": "string",
+        "enum": ["PENDING", "PAID", "FAILED", "REFUNDED"]
+      },
+      "PaymentMethod": {
+        "type": "string",
+        "enum": ["CREDIT_CARD", "DEBIT_CARD", "PAYPAL", "BANK_TRANSFER", "CRYPTO"]
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": ["CUSTOMER", "ADMIN", "VENDOR", "SUPPORT"]
+      },
+      "Address": {
+        "type": "object",
+        "required": ["street", "city", "country", "postal_code"],
+        "properties": {
+          "id": { "type": "string" },
+          "street": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "country": { "type": "string" },
+          "postal_code": { "type": "string" },
+          "is_default": { "type": "boolean" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "required": ["id", "name", "slug"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "image_url": { "type": "string" },
+          "parent_id": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductImage": {
+        "type": "object",
+        "required": ["url"],
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string" },
+          "alt_text": { "type": "string" },
+          "is_primary": { "type": "boolean" },
+          "sort_order": { "type": "integer" }
+        }
+      },
+      "ProductVariant": {
+        "type": "object",
+        "required": ["id", "sku", "price", "stock_quantity"],
+        "properties": {
+          "id": { "type": "string" },
+          "sku": { "type": "string" },
+          "price": { "type": "number" },
+          "compare_at_price": { "type": "number" },
+          "stock_quantity": { "type": "integer" },
+          "weight_grams": { "type": "integer" },
+          "attributes": { "type": "object" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["id", "name", "slug", "price", "category", "images", "variants", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "type": "number" },
+          "compare_at_price": { "type": "number" },
+          "sku": { "type": "string" },
+          "stock_quantity": { "type": "integer" },
+          "is_active": { "type": "boolean" },
+          "is_featured": { "type": "boolean" },
+          "category": { "$ref": "#/components/schemas/Category" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductImage" }
+          },
+          "variants": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductVariant" }
+          },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "average_rating": { "type": "number" },
+          "review_count": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": ["id", "email", "first_name", "last_name", "role", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "phone": { "type": "string" },
+          "role": { "$ref": "#/components/schemas/UserRole" },
+          "avatar_url": { "type": "string" },
+          "is_verified": { "type": "boolean" },
+          "addresses": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Address" }
+          },
+          "created_at": { "type": "string", "format": "date-time" },
+          "last_login_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CartItem": {
+        "type": "object",
+        "required": ["id", "product", "variant", "quantity", "unit_price"],
+        "properties": {
+          "id": { "type": "string" },
+          "product": { "$ref": "#/components/schemas/Product" },
+          "variant": { "$ref": "#/components/schemas/ProductVariant" },
+          "quantity": { "type": "integer" },
+          "unit_price": { "type": "number" },
+          "total_price": { "type": "number" }
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "required": ["id", "user_id", "items", "subtotal", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "user_id": { "type": "string" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CartItem" }
+          },
+          "subtotal": { "type": "number" },
+          "discount_amount": { "type": "number" },
+          "tax_amount": { "type": "number" },
+          "total": { "type": "number" },
+          "coupon_code": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "OrderItem": {
+        "type": "object",
+        "required": ["id", "product_id", "product_name", "variant_id", "quantity", "unit_price", "total_price"],
+        "properties": {
+          "id": { "type": "string" },
+          "product_id": { "type": "string" },
+          "product_name": { "type": "string" },
+          "variant_id": { "type": "string" },
+          "sku": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "unit_price": { "type": "number" },
+          "total_price": { "type": "number" }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "required": ["id", "order_id", "amount", "currency", "status", "method", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "order_id": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/PaymentStatus" },
+          "method": { "$ref": "#/components/schemas/PaymentMethod" },
+          "transaction_id": { "type": "string" },
+          "gateway_response": { "type": "object" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "required": ["id", "user_id", "items", "status", "payment", "shipping_address", "subtotal", "total", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "order_number": { "type": "string" },
+          "user_id": { "type": "string" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OrderItem" }
+          },
+          "status": { "$ref": "#/components/schemas/OrderStatus" },
+          "payment": { "$ref": "#/components/schemas/Payment" },
+          "shipping_address": { "$ref": "#/components/schemas/Address" },
+          "billing_address": { "$ref": "#/components/schemas/Address" },
+          "subtotal": { "type": "number" },
+          "discount_amount": { "type": "number" },
+          "tax_amount": { "type": "number" },
+          "shipping_amount": { "type": "number" },
+          "total": { "type": "number" },
+          "coupon_code": { "type": "string" },
+          "notes": { "type": "string" },
+          "tracking_number": { "type": "string" },
+          "shipped_at": { "type": "string", "format": "date-time" },
+          "delivered_at": { "type": "string", "format": "date-time" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "required": ["id", "product_id", "user_id", "rating", "created_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "product_id": { "type": "string" },
+          "user_id": { "type": "string" },
+          "rating": { "type": "integer" },
+          "title": { "type": "string" },
+          "body": { "type": "string" },
+          "is_verified_purchase": { "type": "boolean" },
+          "helpful_count": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Inventory": {
+        "type": "object",
+        "required": ["id", "product_id", "variant_id", "quantity", "reserved_quantity", "updated_at"],
+        "properties": {
+          "id": { "type": "string" },
+          "product_id": { "type": "string" },
+          "variant_id": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "reserved_quantity": { "type": "integer" },
+          "available_quantity": { "type": "integer" },
+          "low_stock_threshold": { "type": "integer" },
+          "is_tracked": { "type": "boolean" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateOrderRequest": {
+        "type": "object",
+        "required": ["cart_id", "shipping_address_id", "payment_method"],
+        "properties": {
+          "cart_id": { "type": "string" },
+          "shipping_address_id": { "type": "string" },
+          "billing_address_id": { "type": "string" },
+          "payment_method": { "$ref": "#/components/schemas/PaymentMethod" },
+          "coupon_code": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      },
+      "AddCartItemRequest": {
+        "type": "object",
+        "required": ["product_id", "variant_id", "quantity"],
+        "properties": {
+          "product_id": { "type": "string" },
+          "variant_id": { "type": "string" },
+          "quantity": { "type": "integer" }
+        }
+      },
+      "CreateReviewRequest": {
+        "type": "object",
+        "required": ["product_id", "rating"],
+        "properties": {
+          "product_id": { "type": "string" },
+          "rating": { "type": "integer" },
+          "title": { "type": "string" },
+          "body": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/products": {
+      "get": {
+        "tags": ["Product"],
+        "operationId": "listProducts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Product" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": ["Product"],
+        "operationId": "getProduct",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}/reviews": {
+      "get": {
+        "tags": ["Review"],
+        "operationId": "getProductReviews",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Review" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Review"],
+        "operationId": "createReview",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateReviewRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Review" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": ["Category"],
+        "operationId": "listCategories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Category" } }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["User"],
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "operationId": "deleteUser",
+        "responses": { "204": {} }
+      }
+    },
+    "/cart": {
+      "get": {
+        "tags": ["Cart"],
+        "operationId": "getCart",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Cart"],
+        "operationId": "addCartItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddCartItemRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Cart" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/items/{itemId}": {
+      "delete": {
+        "tags": ["Cart"],
+        "operationId": "removeCartItem",
+        "responses": { "204": {} }
+      }
+    },
+    "/orders": {
+      "get": {
+        "tags": ["Order"],
+        "operationId": "listOrders",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Order" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Order"],
+        "operationId": "createOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateOrderRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Order" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": ["Order"],
+        "operationId": "getOrder",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Order" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/cancel": {
+      "post": {
+        "tags": ["Order"],
+        "operationId": "cancelOrder",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Order" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/{id}": {
+      "get": {
+        "tags": ["Payment"],
+        "operationId": "getPayment",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Payment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory/{productId}": {
+      "get": {
+        "tags": ["Inventory"],
+        "operationId": "getInventory",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Inventory" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

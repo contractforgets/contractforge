@@ -1,49 +1,70 @@
 import { Result } from "../types/result";
 import { mapApiErrorToDomain } from "../errors/error.mapper";
 import { <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %> } from "../repository/<%= kebabCase(entity.name) %>.repository";
-<% 
+<%
   const domains = new Set();
-  const mappers = new Set();
+  const mappersSingle = new Set();  // needs mapXToDomain
+  const mappersArray = new Set();   // needs mapXListToDomain
   const dtosForInput = new Set();
   const validators = new Set();
   let hasValidation = false;
-  
+
   entity.endpoints.forEach(ep => {
-    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(pascalCase(ep.requestFields[0].ref));
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) {
+      dtosForInput.add(pascalCase(ep.requestFields[0].ref));
+    }
     if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) {
       hasValidation = true;
-      domains.add(pascalCase(ep.responseFields[0].ref));
-      mappers.add(pascalCase(ep.responseFields[0].ref));
-      validators.add(pascalCase(ep.responseFields[0].ref));
+      const domainName = pascalCase(ep.responseFields[0].ref);
+      domains.add(domainName);
+      validators.add(domainName);
+      if (ep.responseFields[0].isArray) {
+        mappersArray.add(domainName);
+      } else {
+        mappersSingle.add(domainName);
+      }
     }
   });
 
-  if (hasValidation) { 
+  // Build per-mapper import lists
+  const mapperImports = new Map();
+  for (const m of mappersSingle) {
+    if (!mapperImports.has(m)) mapperImports.set(m, []);
+    mapperImports.get(m).push(`map${m}${config.naming.dtoSuffix}ToDomain`);
+  }
+  for (const m of mappersArray) {
+    if (!mapperImports.has(m)) mapperImports.set(m, []);
+    mapperImports.get(m).push(`map${m}${config.naming.dtoSuffix}ListToDomain`);
+  }
+
+  if (hasValidation) {
 -%>
 import { z } from "zod";
 <% } -%>
 <% Array.from(domains).forEach(domain => { -%>
 import { <%= domain %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> as <%= domain %>Domain } from "../domain/<%= kebabCase(domain) %>";
 <% }); -%>
-<% Array.from(mappers).forEach(mapper => { -%>
-import { map<%= mapper %><%= config.naming.dtoSuffix %>ToDomain } from "../mappers/<%= kebabCase(mapper) %>.mapper";
+<% Array.from(mapperImports.entries()).forEach(([mapper, fns]) => { -%>
+import { <%- fns.join(', ') %> } from "../mappers/<%= kebabCase(mapper) %>.mapper";
 <% }); -%>
 <% Array.from(validators).forEach(validator => { -%>
 import { <%= validator %>Validator } from "../validators/<%= kebabCase(validator) %>.validator";
 <% }); -%>
+<% if (dtosForInput.size > 0) { -%>
 <% Array.from(dtosForInput).forEach(dto => { -%>
-import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../dto/<%= snakeCase(dto) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../dto/<%= snakeCase(dto) %><%= config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : '' %>";
 <% }); -%>
+<% } -%>
 
 export class <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> {
-<% entity.endpoints.forEach(ep => { 
+<% entity.endpoints.forEach(ep => {
      const req = ep.requestFields ? ep.requestFields[0] : null;
      const res = ep.responseFields ? ep.responseFields[0] : null;
-     
+
      const reqType = req ? (req.ref ? `${pascalCase(req.ref)}Dto${req.isArray ? '[]' : ''}` : 'any') : 'any';
      const domainName = res ? (res.ref ? pascalCase(res.ref) : 'any') : 'void';
      const resType = domainName !== 'void' ? `${domainName}Domain${res.isArray ? '[]' : ''}` : 'void';
-     
+
      const isGet = ep.method === 'GET' || ep.method === 'DELETE';
      const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');
      const repoArgs = isGet ? '' : (reqType !== 'any' ? `data` : '');
@@ -55,7 +76,7 @@ export class <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> {
 <% if (domainName !== 'any') { -%>
       <%- res.isArray ? `z.array(${domainName}Validator).parse(dto)` : `${domainName}Validator.parse(dto)` %>;
 <% } -%>
-      const domain = <%- res.isArray ? `dto.map(map${domainName}${config.naming.dtoSuffix}ToDomain)` : `map${domainName}${config.naming.dtoSuffix}ToDomain(dto)` %>;
+      const domain = <%- res.isArray ? `map${domainName}${config.naming.dtoSuffix}ListToDomain(dto)` : `map${domainName}${config.naming.dtoSuffix}ToDomain(dto)` %>;
       return { success: true, data: domain as any };
 <% } else { -%>
       await <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %>.<%= camelCase(ep.name) %>(<%- repoArgs %>);

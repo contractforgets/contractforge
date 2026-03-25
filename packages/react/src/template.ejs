@@ -16,7 +16,7 @@ import { DomainError, Result } from '../../core/types/result';
 import { <%= domain %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> } from '../../core/domain/<%= kebabCase(domain) %>';
 <% }); -%>
 <% Array.from(dtosForInput).forEach(dto => { -%>
-import { <%= dto %><%= config.naming.dtoSuffix %> } from "../../core/dto/<%= snakeCase(dto) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> } from "../../core/dto/<%= snakeCase(dto) %><%= config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : '' %>";
 <% }); -%>
 
 <% entity.endpoints.forEach(ep => { 

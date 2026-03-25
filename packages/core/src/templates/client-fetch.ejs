@@ -1,0 +1,36 @@
+const BASE_URL = (typeof process !== 'undefined' && process.env?.API_URL) || '';
+
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+async function request<T>(method: HttpMethod, url: string, data?: unknown): Promise<{ data: T }> {
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (data !== undefined) {
+    options.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(`${BASE_URL}${url}`, options);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const error: any = new Error(errorData?.message || response.statusText);
+    error.response = { status: response.status, data: errorData };
+    throw error;
+  }
+
+  const json = await response.json();
+  return { data: json };
+}
+
+export const apiClient = {
+  get: <T>(url: string) => request<T>('GET', url),
+  post: <T>(url: string, data?: unknown) => request<T>('POST', url, data),
+  put: <T>(url: string, data?: unknown) => request<T>('PUT', url, data),
+  patch: <T>(url: string, data?: unknown) => request<T>('PATCH', url, data),
+  delete: <T>(url: string) => request<T>('DELETE', url),
+};

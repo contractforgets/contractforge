@@ -1,31 +1,31 @@
 import { ref } from 'vue';
-import { <%= entity.name %>Service } from '../../core/services/<%= kebabCase(entity.name) %>.service';
+import { <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> } from '../../core/services/<%= kebabCase(entity.name) %>.service';
 import { DomainError, Result } from '../../core/types/result';
 <% 
   const domains = new Set();
   const dtosForInput = new Set();
   entity.endpoints.forEach(ep => {
-    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(`${ep.requestFields[0].ref}DTO`);
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(pascalCase(ep.requestFields[0].ref));
     if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) {
-      domains.add(ep.responseFields[0].ref);
+      domains.add(pascalCase(ep.responseFields[0].ref));
     }
   });
 
   Array.from(domains).forEach(domain => {
 -%>
-import { <%= domain %> } from '../../core/domain/<%= kebabCase(domain) %>';
+import { <%= domain %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> as <%= domain %>Domain } from '../../core/domain/<%= kebabCase(domain) %>';
 <% }); -%>
 <% Array.from(dtosForInput).forEach(dto => { -%>
-import { <%= dto %> } from "../../core/dto/<%= snakeCase(dto.replace('DTO','')) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../../core/dto/<%= snakeCase(dto) %><%= config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : '' %>";
 <% }); -%>
 
 <% entity.endpoints.forEach(ep => { 
      const req = ep.requestFields ? ep.requestFields[0] : null;
      const res = ep.responseFields ? ep.responseFields[0] : null;
      
-     const reqType = req ? (req.ref ? `${req.ref}DTO${req.isArray ? '[]' : ''}` : 'any') : 'any';
-     const domainName = res ? (res.ref ? res.ref : 'any') : 'void';
-     const resType = domainName !== 'void' ? `${domainName}${res.isArray ? '[]' : ''}` : 'void';
+     const reqType = req ? (req.ref ? `${pascalCase(req.ref)}Dto${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const domainName = res ? (res.ref ? pascalCase(res.ref) : 'any') : 'void';
+     const resType = domainName !== 'void' ? `${domainName}Domain${res.isArray ? '[]' : ''}` : 'void';
      
      const isGet = ep.method === 'GET' || ep.method === 'DELETE';
      const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');
@@ -39,7 +39,7 @@ export function use<%= pascalCase(ep.name) %>() {
   const execute = async (<%- params %>): Promise<Result<<%- resType %>>> => {
     isLoading.value = true;
     error.value = undefined;
-    const result = await <%= entity.name %>Service.<%= camelCase(ep.name) %>(<%- executeArgs %>);
+    const result = await <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %>.<%= camelCase(ep.name) %>(<%- executeArgs %>);
     if (result.success) {
       data.value = result.data as any;
     } else {

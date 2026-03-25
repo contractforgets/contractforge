@@ -1,0 +1,25 @@
+{
+  "name": "@sdkforge/runtime",
+  "version": "0.1.6",
+  "description": "Runtime utilities for sdkforge-generated SDKs",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "sdkforge",
+    "runtime",
+    "sdk",
+    "clean-architecture"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sdkforge-ts/sdkforge.git",
+    "directory": "packages/runtime"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

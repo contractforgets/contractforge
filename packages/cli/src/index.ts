@@ -3,7 +3,7 @@ import { program } from "commander";
 import fs from "fs-extra";
 import path from "path";
 import chokidar from "chokidar";
-import { GeneratorEngine, EngineConfig } from "@sdkforge/core";
+import { GeneratorEngine, EngineConfig, runDoctor, printDoctorReport } from "@sdkforge/core";
 
 program
   .name("sdkforge")
@@ -32,6 +32,30 @@ program
   });
 
 program
+  .command("doctor")
+  .description("Check and auto-format generated SDK files")
+  .option("-o, --output <dir>", "Directory to check (defaults to config output)")
+  .option("--fix", "Auto-fix formatting issues (default: true)", true)
+  .option("--no-fix", "Report issues only, do not write files")
+  .action(async (options) => {
+    let outDir = "src/api";
+    const configPath = path.resolve(process.cwd(), "sdkforge.config.json");
+    if (fs.existsSync(configPath)) {
+      const conf = JSON.parse(await fs.readFile(configPath, "utf-8"));
+      if (conf.output) outDir = conf.output;
+    }
+    if (options.output) outDir = options.output;
+
+    const absDir = path.resolve(process.cwd(), outDir);
+    console.log(`[DOCTOR] Scanning ${absDir}...`);
+    const result = await runDoctor(absDir, options.fix, true);
+    printDoctorReport(result, absDir);
+
+    const nonFormatIssues = result.issues.filter((i) => i.type !== "format");
+    if (nonFormatIssues.length > 0) process.exit(1);
+  });
+
+program
   .command("clean")
   .description("Removes generated files")
   .action(async () => {
@@ -55,6 +79,7 @@ program
   .option("--plugin <plugin...>", "Additional plugins to run (e.g. react-query, swr)")
   .option("--watch", "Watch mode for instant rebuilds")
   .option("--dry-run", "Shows files without writing")
+  .option("--no-doctor", "Skip post-generation formatting")
   .action(async (options) => {
     
     // Build Config
@@ -65,6 +90,7 @@ program
       clean: true,
       dryRun: options.dryRun || false,
       watch: options.watch || false,
+      doctor: options.doctor !== false,
       naming: { dtoSuffix: "", serviceSuffix: "Service", repositorySuffix: "Repository" }
     };
 

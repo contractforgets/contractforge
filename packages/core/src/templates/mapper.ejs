@@ -1,6 +1,6 @@
-import { <%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %> as <%= pascalCase(entity.name) %>Dto } from "../dto/<%= snakeCase(entity.name) %>.dto";
+import { <%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %> as <%= pascalCase(entity.name) %>Dto } from "../dto/<%= snakeCase(entity.name) %><%= config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : '' %>";
 import { <%= pascalCase(entity.name) %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> as <%= pascalCase(entity.name) %>Domain } from "../domain/<%= kebabCase(entity.name) %>";
-<% 
+<%
   const extImports = new Set();
   entity.fields.forEach(field => {
     if (field.ref && field.ref !== entity.name) {
@@ -16,13 +16,17 @@ export function map<%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %>T
   return {
     ...dto,
 <% entity.fields.forEach(field => { -%>
-<% if (field.type === 'Date') { -%>
-    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? new Date(dto.<%= snakeCase(field.name) %>) : undefined as any,
+<% if (field.isDate) { -%>
+    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? new Date(dto.<%= snakeCase(field.name) %>) : <% if (field.required) { %>new Date(0)<% } else if (config.naming?.forceAny) { %>undefined as any<% } else { %>undefined<% } %>,
 <% } else if (field.ref) { -%>
-    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? <%- field.isArray ? `dto.${snakeCase(field.name)}.map(map${pascalCase(field.ref)}${config.naming.dtoSuffix}ToDomain)` : `map${pascalCase(field.ref)}${config.naming.dtoSuffix}ToDomain(dto.${snakeCase(field.name)})` %> : undefined as any,
+    <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %> ? <%- field.isArray ? `dto.${snakeCase(field.name)}.map(map${pascalCase(field.ref)}${config.naming.dtoSuffix}ToDomain)` : `map${pascalCase(field.ref)}${config.naming.dtoSuffix}ToDomain(dto.${snakeCase(field.name)})` %> : <% if (field.required) { %>undefined!<% } else if (config.naming?.forceAny) { %>undefined as any<% } else { %>undefined<% } %>,
 <% } else { -%>
     <%= camelCase(field.name) %>: dto.<%= snakeCase(field.name) %>,
 <% } -%>
 <% }); -%>
-  } as any;
+  } <%= config.naming?.forceAny ? 'as any' : '' %>;
+}
+
+export function map<%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %>ListToDomain(dtos: <%= pascalCase(entity.name) %>Dto[]): <%= pascalCase(entity.name) %>Domain[] {
+  return dtos.map(map<%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %>ToDomain);
 }

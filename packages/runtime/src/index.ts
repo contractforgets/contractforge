@@ -4,9 +4,20 @@ export type DomainError = {
   details?: any;
 };
 
-export type Result<T> = 
+export type Result<T> =
   | { success: true; data: T }
   | { success: false; error: DomainError };
+
+export interface ApiResponse<T> {
+  data: T;
+  meta?: any;
+}
+
+export interface ApiErrorDTO {
+  code: string;
+  message: string;
+  details?: any;
+}
 
 export interface Pagination {
   page: number;
@@ -26,13 +37,10 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-export interface ApiResponse<T> {
-  data: T;
-  meta?: any;
+export function isSuccess<T>(result: Result<T>): result is { success: true; data: T } {
+  return result.success === true;
 }
 
-export interface ApiErrorDTO {
-  code: string;
-  message: string;
-  details?: any;
+export function isError<T>(result: Result<T>): result is { success: false; error: DomainError } {
+  return result.success === false;
 }

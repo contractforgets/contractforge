@@ -1,0 +1,12 @@
+{
+  "input": "ecommerce-openapi.json",
+  "output": "src/api",
+  "client": "axios",
+  "adapters": [],
+  "naming": {
+    "dtoSuffix": "DTO",
+    "serviceSuffix": "Service",
+    "repositorySuffix": "Repository"
+  },
+  "wrapResponse": false
+}

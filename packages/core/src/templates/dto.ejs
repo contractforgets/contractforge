@@ -1,15 +1,37 @@
+<%
+  const dtoImports = new Set();
+  entity.fields.forEach(f => {
+    if (f.ref && f.ref !== entity.name) {
+      dtoImports.add(`import { ${pascalCase(f.ref)}${config.naming.dtoSuffix} } from "./${snakeCase(f.ref)}${config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : ''}";`);
+    }
+  });
+  const importLines = Array.from(dtoImports);
+-%>
+<% if (importLines.length > 0) { -%>
+<% importLines.forEach(imp => { -%>
+<%- imp %>
+<% }); %>
+<% } -%>
 <% if (entity.fields.length === 0) { -%>
 export type <%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %> = Record<string, unknown>;
 <% } else { -%>
 export interface <%= pascalCase(entity.name) %><%= config.naming.dtoSuffix %> {
 <% entity.fields.forEach(field => { -%>
-<% 
-  let fieldType = field.type;
+<%
+  let fieldType;
   if (field.ref) {
     fieldType = `${pascalCase(field.ref)}${config.naming.dtoSuffix}`;
-  }
-  if (field.isArray) {
-    fieldType = `${fieldType}[]`;
+    if (field.isArray) fieldType = `${fieldType}[]`;
+  } else if (field.type === 'integer' || field.type === 'number') {
+    fieldType = field.isArray ? 'number[]' : 'number';
+  } else if (field.type === 'boolean') {
+    fieldType = field.isArray ? 'boolean[]' : 'boolean';
+  } else if (field.type === 'array') {
+    fieldType = 'any[]';
+  } else if (field.type === 'object') {
+    fieldType = 'Record<string, unknown>';
+  } else {
+    fieldType = field.isArray ? 'string[]' : 'string';
   }
 -%>
   <%= snakeCase(field.name) %><%- field.required ? "" : "?" %>: <%- fieldType %>;

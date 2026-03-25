@@ -7,7 +7,7 @@ import { apiClient } from "../client/api-client";
   });
   Array.from(dtos).forEach(dto => {
 -%>
-import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../dto/<%= snakeCase(dto) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../dto/<%= snakeCase(dto) %><%= config.naming?.dtoSuffix ? '.' + config.naming.dtoSuffix.toLowerCase() : '' %>";
 <% }); -%>
 <% if (config.wrapResponse) { -%>
 import { ApiResponse } from "../types/result";

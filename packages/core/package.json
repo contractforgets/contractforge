@@ -1,6 +1,6 @@
 {
   "name": "@sdkforge/core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "keywords": [
     "openapi",
@@ -30,17 +30,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest --run"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "change-case": "^5.4.4",
     "ejs": "^3.1.9",
     "fs-extra": "^11.2.0",
-    "@apidevtools/swagger-parser": "^10.1.0"
+    "prettier": "^3.8.1"
   },
   "devDependencies": {
-    "@types/fs-extra": "^11.0.4",
     "@types/ejs": "^3.1.5",
-    "typescript": "^5.0.0"
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^25.5.0",
+    "fast-check": "^3.23.2",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.1"
   }
 }

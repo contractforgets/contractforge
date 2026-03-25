@@ -23,13 +23,15 @@ import { z } from "zod";
       zType = "z.number()";
     } else if (f.type === 'boolean') {
       zType = "z.boolean()";
+    } else if (f.type === 'object') {
+      zType = "z.record(z.string(), z.any())";
     } else if (f.type === 'array') {
-      zType = "z.array(z.any())";
+      // bare array type with no ref — already an array, don't double-wrap
+      zType = f.required ? "z.array(z.any())" : "z.array(z.any()).optional()";
+      return zType;
     }
     
-    if (f.isArray && !f.ref) {
-      zType = `z.array(${zType})`;
-    } else if (f.isArray && f.ref) {
+    if (f.isArray) {
       zType = `z.array(${zType})`;
     }
     

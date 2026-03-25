@@ -16,8 +16,10 @@ export interface EngineConfig {
     dtoSuffix?: string;
     serviceSuffix?: string;
     repositorySuffix?: string;
+    forceAny?: boolean;
   };
   wrapResponse?: boolean;
+  doctor?: boolean;
   hooks?: {
     beforeGenerate?: () => Promise<void>;
     afterGenerate?: () => Promise<void>;

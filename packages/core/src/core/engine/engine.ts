@@ -16,6 +16,7 @@ import { RepositoryGenerator } from "../../generators/repository/repository.gene
 import { ServiceGenerator } from "../../generators/service/service.generator";
 
 import { BarrelGenerator } from "../../generators/barrel/barrel.generator";
+import { DoctorGenerator } from "../../generators/doctor/doctor.generator";
 
 export class GeneratorEngine {
   private config: EngineConfig;
@@ -88,6 +89,11 @@ export class GeneratorEngine {
     }
 
     await new BarrelGenerator(context).generate();
+
+    // Run doctor (format + lint) unless explicitly disabled
+    if (this.config.doctor !== false) {
+      await new DoctorGenerator(context).generate();
+    }
 
     if (this.config.hooks?.afterGenerate) {
       await this.config.hooks.afterGenerate();

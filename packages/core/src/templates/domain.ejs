@@ -8,6 +8,7 @@
     if (field.type === 'integer' || field.type === 'number') return 'number';
     if (field.type === 'boolean') return 'boolean';
     if (field.type === 'array') return 'any[]';
+    if (field.type === 'object') return 'Record<string, unknown>';
     return 'string';
   }
   
