@@ -3,12 +3,12 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sdkforge/sdkforge.git"
+    "url": "git+https://github.com/sdkforge-ts/sdkforge.git"
   },
   "bugs": {
-    "url": "https://github.com/sdkforge/sdkforge/issues"
+    "url": "https://github.com/sdkforge-ts/sdkforge/issues"
   },
-  "homepage": "https://github.com/sdkforge/sdkforge#readme",
+  "homepage": "https://github.com/sdkforge-ts/sdkforge#readme",
   "keywords": [
     "openapi",
     "swagger",

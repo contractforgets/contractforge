@@ -1,6 +1,6 @@
 {
   "name": "@sdkforge/swr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "openapi",
     "swagger",
@@ -12,13 +12,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sdkforge/sdkforge.git",
+    "url": "git+https://github.com/sdkforge-ts/sdkforge.git",
     "directory": "packages/swr"
   },
   "bugs": {
-    "url": "https://github.com/sdkforge/sdkforge/issues"
+    "url": "https://github.com/sdkforge-ts/sdkforge/issues"
   },
-  "homepage": "https://github.com/sdkforge/sdkforge/tree/main/packages/swr#readme",
+  "homepage": "https://github.com/sdkforge-ts/sdkforge/tree/main/packages/swr#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
