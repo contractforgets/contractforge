@@ -69,12 +69,34 @@ export function parsePostman(postmanJson: any): ContractModel {
           }
         }
 
+        let finalRequestFields: Field[] = [];
+        if (!['GET', 'DELETE'].includes(method.toUpperCase())) {
+          finalRequestFields = [{
+            name: 'body',
+            type: 'object',
+            required: true,
+            isArray: false,
+            ref: entityName
+          }];
+        } else if (requestFields.length > 0) {
+          finalRequestFields = requestFields;
+        }
+
+        const isArrayResponse = method.toUpperCase() === "GET" && !pathUrl.includes(":");
+        const finalResponseFields: Field[] = [{
+          name: 'data',
+          type: 'object',
+          required: true,
+          isArray: isArrayResponse,
+          ref: entityName
+        }];
+
         const endpoint: Endpoint = {
           name: endpointName,
           method: method.toUpperCase() as any,
-          path: pathUrl, // Rebuild clean path
-          requestFields, // Now dynamically mapped over postman examples securely
-          responseFields: [] // Defaults to returning basically typed instances
+          path: pathUrl,
+          requestFields: finalRequestFields,
+          responseFields: finalResponseFields
         };
         
         entitiesMap.get(entityName)!.endpoints.push(endpoint);
