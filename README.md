@@ -3,7 +3,19 @@
 [![npm version](https://badge.fury.io/js/@sdkforge%2Fcli.svg)](https://www.npmjs.com/package/@sdkforge/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-**Enterprise SDK Compiler.** Automatically generate strictly-typed DTOs, Domain models, Mappers, Repositories, Services, Zod Validators, and UI Framework Adapters natively from OpenAPI/Postman API contracts.
+**Generate production-ready Clean Architecture SDKs from OpenAPI & Postman contracts.**
+
+sdkforge automatically generates:
+- DTO layer
+- Domain layer
+- Zod validators
+- Mappers
+- Repository layer
+- Service layer
+- HTTP client
+- Error handling
+- Shared types
+- React / Angular / Vue / Nest adapters
 
 *Zero Dependencies. Framework Agnostic. Pure Clean Architecture.*
 

@@ -18,3 +18,5 @@ dist/
 example/src/api
 example/node_modules
 example/dist
+
+.kiro/
