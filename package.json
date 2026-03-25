@@ -15,7 +15,7 @@
     "postman",
     "code-generator",
     "typescript",
-    "clean-architecture",
+    "clean-architecture", "domain-driven-design", "dto", "repository-pattern", "api-client", "sdk-generator", "api-service", "zod",
     "monorepo",
     "sdk-builder"
   ],

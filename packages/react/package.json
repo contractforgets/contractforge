@@ -1,6 +1,6 @@
 {
   "name": "@sdkforge/react",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "license": "MIT",
   "keywords": [
     "openapi",
@@ -9,6 +9,13 @@
     "hooks",
     "react-query",
     "clean-architecture",
+    "domain-driven-design",
+    "dto",
+    "repository-pattern",
+    "api-client",
+    "sdk-generator",
+    "api-service",
+    "zod",
     "sdk-builder"
   ],
   "repository": {
