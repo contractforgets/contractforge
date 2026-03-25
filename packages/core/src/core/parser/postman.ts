@@ -1,4 +1,4 @@
-import { ContractModel, Entity, Endpoint } from "../model/contract";
+import { ContractModel, Entity, Endpoint, Field } from "../model/contract";
 import { pascalCase, camelCase } from "change-case";
 
 export function parsePostman(postmanJson: any): ContractModel {
@@ -38,11 +38,42 @@ export function parsePostman(postmanJson: any): ContractModel {
         
         const endpointName = camelCase(`${method}_${item.name.replace(/[\W_]+/g, "_")}`);
         
+        const requestFields: Field[] = [];
+        if (item.request?.body?.mode === "raw" && item.request?.body?.raw) {
+          try {
+            const parsedBody = JSON.parse(item.request.body.raw);
+            if (typeof parsedBody === "object" && parsedBody !== null) {
+              for (const [key, val] of Object.entries(parsedBody)) {
+                let type: any = "string";
+                if (typeof val === "number") type = "number";
+                if (typeof val === "boolean") type = "boolean";
+                if (typeof val === "object" && !Array.isArray(val)) type = "any";
+                
+                const field: Field = {
+                  name: key,
+                  type,
+                  required: true,
+                  isArray: Array.isArray(val)
+                };
+                
+                requestFields.push(field);
+                
+                const entityDetails = entitiesMap.get(entityName)!;
+                if (!entityDetails.fields.find(f => f.name === key)) {
+                  entityDetails.fields.push(field);
+                }
+              }
+            }
+          } catch (e) {
+            // Ignore parse errors, fallback to empty fields natively
+          }
+        }
+
         const endpoint: Endpoint = {
           name: endpointName,
           method: method.toUpperCase() as any,
           path: pathUrl, // Rebuild clean path
-          requestFields: [], // We skip full schema guessing for postman fallback in MVP
+          requestFields, // Now dynamically mapped over postman examples securely
           responseFields: [] // Defaults to returning basically typed instances
         };
         

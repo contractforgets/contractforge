@@ -1,7 +1,7 @@
 <%
   function getTsType(field) {
     if (field.ref) {
-      const baseType = field.ref;
+      const baseType = pascalCase(field.ref);
       return field.isArray ? `${baseType}[]` : baseType;
     }
     if (field.isDate) return 'Date';
@@ -14,7 +14,7 @@
   const imports = new Set();
   entity.fields.forEach(f => {
     if (f.ref && f.ref !== entity.name) {
-      imports.add(`import { ${f.ref} } from "./${kebabCase(f.ref)}";`);
+      imports.add(`import { ${pascalCase(f.ref)}${config.naming.domainSuffix ? config.naming.domainSuffix : ''} } from "./${kebabCase(f.ref)}";`);
     }
   });
 -%>
@@ -22,8 +22,12 @@
 <%- imp %>
 <% }); -%>
 
-export interface <%= entity.name %> {
+<% if (entity.fields.length === 0) { -%>
+export type <%= pascalCase(entity.name) %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> = Record<string, unknown>;
+<% } else { -%>
+export interface <%= pascalCase(entity.name) %><%- config.naming.domainSuffix ? config.naming.domainSuffix : '' %> {
 <% entity.fields.forEach(field => { -%>
   <%= camelCase(field.name) %><%- field.required ? '' : '?' %>: <%- getTsType(field) %>;
 <% }); -%>
 }
+<% } -%>

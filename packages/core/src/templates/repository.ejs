@@ -2,12 +2,12 @@ import { apiClient } from "../client/api-client";
 <% 
   const dtos = new Set();
   entity.endpoints.forEach(ep => {
-    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtos.add(ep.requestFields[0].ref);
-    if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) dtos.add(ep.responseFields[0].ref);
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtos.add(pascalCase(ep.requestFields[0].ref));
+    if (ep.responseFields && ep.responseFields.length > 0 && ep.responseFields[0]?.ref) dtos.add(pascalCase(ep.responseFields[0].ref));
   });
   Array.from(dtos).forEach(dto => {
 -%>
-import { <%= dto %><%= config.naming.dtoSuffix %> } from "../dto/<%= snakeCase(dto) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> as <%= dto %>Dto } from "../dto/<%= snakeCase(dto) %>.dto";
 <% }); -%>
 <% if (config.wrapResponse) { -%>
 import { ApiResponse } from "../types/result";
@@ -18,9 +18,9 @@ export class <%= pascalCase(entity.name) %><%= config.naming.repositorySuffix %>
      const req = ep.requestFields ? ep.requestFields[0] : null;
      const res = ep.responseFields ? ep.responseFields[0] : null;
      
-     const reqType = req ? (req.ref ? `${req.ref}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
-     const domainName = res ? (res.ref ? res.ref : 'any') : 'void';
-     const resType = domainName !== 'void' ? `${domainName}${config.naming.dtoSuffix}${res.isArray ? '[]' : ''}` : 'void';
+     const reqType = req ? (req.ref ? `${pascalCase(req.ref)}Dto${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const domainName = res ? (res.ref ? pascalCase(res.ref) : 'any') : 'void';
+     const resType = domainName !== 'void' ? `${domainName}Dto${res.isArray ? '[]' : ''}` : 'void';
      
      const isGet = ep.method === 'GET' || ep.method === 'DELETE';
      const params = isGet ? '' : (reqType !== 'any' ? `data: ${reqType}` : 'data?: any');

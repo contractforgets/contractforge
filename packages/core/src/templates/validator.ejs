@@ -39,8 +39,12 @@ import { z } from "zod";
     return zType;
   }
 -%>
+<% if (entity.fields.length === 0) { -%>
+export const <%= pascalCase(entity.name) %>Validator = z.record(z.string(), z.any());
+<% } else { -%>
 export const <%= pascalCase(entity.name) %>Validator = z.object({
 <% entity.fields.forEach(f => { -%>
   <%= f.name %>: <%- getZodType(f) %>,
 <% }); -%>
 });
+<% } -%>

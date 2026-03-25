@@ -3,17 +3,17 @@ import { <%= pascalCase(entity.name) %><%= config.naming.serviceSuffix %> } from
 <% 
   const dtosForInput = new Set();
   entity.endpoints.forEach(ep => {
-    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(`${ep.requestFields[0].ref}${config.naming.dtoSuffix}`);
+    if (ep.requestFields && ep.requestFields.length > 0 && ep.requestFields[0]?.ref) dtosForInput.add(pascalCase(ep.requestFields[0].ref));
   });
 
   Array.from(dtosForInput).forEach(dto => {
 -%>
-import { <%= dto %> } from "../../core/dto/<%= snakeCase(dto.replace(config.naming.dtoSuffix, '')) %>.dto";
+import { <%= dto %><%= config.naming.dtoSuffix %> } from "../../core/dto/<%= snakeCase(dto) %>.dto";
 <% }); -%>
 
 <% entity.endpoints.forEach(ep => { 
      const req = ep.requestFields ? ep.requestFields[0] : null;
-     const reqType = req ? (req.ref ? `${req.ref}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
+     const reqType = req ? (req.ref ? `${pascalCase(req.ref)}${config.naming.dtoSuffix}${req.isArray ? '[]' : ''}` : 'any') : 'any';
      const isGet = ep.method === 'GET' || ep.method === 'DELETE';
 -%>
 <% if (isGet) { -%>
